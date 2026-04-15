@@ -1,0 +1,9 @@
+{
+	"name": "Bootcamp2026ADFModule",
+	"location": "centralindia",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "4172d3d3-0a06-4578-bcf9-c76d89801664",
+		"tenantId": "17dcec91-66ec-4c4b-a988-473694df546c"
+	}
+}
