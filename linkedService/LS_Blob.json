@@ -1,0 +1,16 @@
+{
+	"name": "LS_Blob",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"connectionString": "DefaultEndpointsProtocol=https;AccountName=adfbootcampsa2026;EndpointSuffix=core.windows.net;",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEZERTBGMEVCLUU3OEYtNERCNi1BQTk2LTRDQzAzNkU3RTYwRl80MGRiOGZkZC1hMjIyLTQ5MWQtODI3Ny1lOTJlNTljYTk5ZGIiDQp9"
+		},
+		"connectVia": {
+			"referenceName": "BootcampModuleTest",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
