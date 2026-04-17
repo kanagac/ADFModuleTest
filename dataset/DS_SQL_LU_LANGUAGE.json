@@ -1,21 +1,16 @@
 {
-	"name": "DS_SQL_PHRMCY",
+	"name": "DS_SQL_LU_LANGUAGE",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_SQL_TABLE",
 			"type": "LinkedServiceReference"
-		},
-		"parameters": {
-			"Tname": {
-				"type": "string"
-			}
 		},
 		"annotations": [],
 		"type": "SqlServerTable",
 		"schema": [],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "SRC_PHRMCY"
+			"table": "LU_LANGUAGE"
 		}
 	}
 }

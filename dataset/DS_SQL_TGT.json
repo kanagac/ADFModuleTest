@@ -5,12 +5,20 @@
 			"referenceName": "LS_SQL_TGT_TABLE",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"TNAME": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "SqlServerTable",
 		"schema": [],
 		"typeProperties": {
 			"schema": "Mod_User13",
-			"table": "Mod_Bootcamp_2026"
+			"table": {
+				"value": "@dataset().TNAME",
+				"type": "Expression"
+			}
 		}
 	}
 }
