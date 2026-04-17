@@ -1,0 +1,49 @@
+{
+	"name": "PL_MOC_USER6",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_USER6",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_MOC_USER6",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"PHRMCY": {
+								"P_TABLE_NAME": "SRC_PHRMCY"
+							},
+							"STATUS": {
+								"P_TABLE_NAME": "STATUS"
+							},
+							"LANGUAGE": {
+								"P_TABLE_NAME": "LU_LANGUAGE"
+							},
+							"DIMTGT": {
+								"P_TABLE_NAME": "DIM_PTNT"
+							},
+							"tgt": {
+								"P_TABLE_NAME": "DIM_PTNT"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
