@@ -5,8 +5,20 @@
 			"referenceName": "LS_SQL_SERVER_TGT",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"TABLE_NAME": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "SqlServerTable",
-		"schema": []
+		"schema": [],
+		"typeProperties": {
+			"schema": "Mod_User4",
+			"table": {
+				"value": "@dataset().TABLE_NAME",
+				"type": "Expression"
+			}
+		}
 	}
 }
