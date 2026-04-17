@@ -149,8 +149,7 @@
 				"          PHRMCY_SYS_IVR_DTA_STRT_DT = ERROR_FUNCTION(''),",
 				"          PHRMCY_SYS_IVR_DTA_STRT_QTR = ERROR_FUNCTION(''),",
 				"          PHRMCY_SYS_IVR_DTA_STRT_YR = ERROR_FUNCTION(''),",
-				"          {} = ERROR_FUNCTION(''),",
-				"          DEAL_NUMBER = ERROR_FUNCTION(''),",
+				"          DEAL_TYPE_CD = left(DEAL_NUMBER, 2),",
 				"          column6 = ERROR_FUNCTION(''),",
 				"          column7 = ERROR_FUNCTION('')) ~> derivedColumn1"
 			]
