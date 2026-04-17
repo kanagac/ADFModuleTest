@@ -33,7 +33,15 @@
 					"name": "Target"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_Target_SQl",
+						"type": "DatasetReference"
+					},
+					"name": "DIMPTNT"
+				}
+			],
 			"transformations": [
 				{
 					"name": "join1"
@@ -55,6 +63,27 @@
 				},
 				{
 					"name": "split1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "select3"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "select4"
+				},
+				{
+					"name": "derivedColumn4"
+				},
+				{
+					"name": "derivedColumn5"
+				},
+				{
+					"name": "alterRow1"
 				}
 			],
 			"scriptLines": [
@@ -97,7 +126,35 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> LULANGUAGE",
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          PINT_KEY as integer,",
+				"          PTNT_ID as integer,",
+				"          PTNT_CD as string,",
+				"          PHRMCY_NCPDP_NBR as integer,",
+				"          PHRMCY_NAT_PROV_ID_NBR as string,",
+				"          PSCB_FIRST_NM as string,",
+				"          PSCB_LAST_NM as string,",
+				"          PHRMCY_NM as string,",
+				"          PHRMCY_ADDR_CITY_NM as string,",
+				"          PHRMCY_ADDR_ST_NM as string,",
+				"          PHRMCY_ADDR_ZNE_NM as string,",
+				"          PHRMCY_ADDR_ZIP_CD as string,",
+				"          PSCB_EMAIL_ID as string,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT as string,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_QTR as string,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_YR as string,",
+				"          PHRMCY_AGE as integer,",
+				"          DEAL_ID as string,",
+				"          DEAL_TYPE_CD as string,",
+				"          DEAL_NUMBER as string,",
+				"          LANG_CD as string,",
+				"          LANG_DESC as string,",
+				"          RCD_CRT_TMS as timestamp,",
+				"          RCD_MOD_TMS as timestamp,",
+				"          START_DATE as timestamp,",
+				"          END_DATE as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> Target",
@@ -201,13 +258,93 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
-				"select2, Target join(PTNT_CD == ERROR_FUNCTION(''),",
+				"select4, select3 join(PINT_ID == t_PTNT_ID,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join3",
-				"join3 split(isNull(t_PTNT_CD),",
-				"     disjoint: false) ~> split1@(newinsert, existing)"
+				"join3 split(isNull(t_PTNT_ID),",
+				"     PINT_ID==t_PTNT_ID&&SourceHash!=TargetHash,",
+				"     disjoint: false) ~> split1@(newinsert, existing)",
+				"Target derive(TargetHash = md5(PHRMCY_ADDR_ZIP_CD)) ~> derivedColumn2",
+				"derivedColumn2 select(mapColumn(",
+				"          t_PINT_KEY = PINT_KEY,",
+				"          t_PTNT_ID = PTNT_ID,",
+				"          t_PTNT_CD = PTNT_CD,",
+				"          t_PHRMCY_NCPDP_NBR = PHRMCY_NCPDP_NBR,",
+				"          t_PHRMCY_NAT_PROV_ID_NBR = PHRMCY_NAT_PROV_ID_NBR,",
+				"          PSCB_FIRST_NM,",
+				"          PSCB_LAST_NM,",
+				"          t_PHRMCY_NM = PHRMCY_NM,",
+				"          t_PHRMCY_ADDR_CITY_NM = PHRMCY_ADDR_CITY_NM,",
+				"          t_PHRMCY_ADDR_ST_NM = PHRMCY_ADDR_ST_NM,",
+				"          t_PHRMCY_ADDR_ZNE_NM = PHRMCY_ADDR_ZNE_NM,",
+				"          t_PHRMCY_ADDR_ZIP_CD = PHRMCY_ADDR_ZIP_CD,",
+				"          t_PSCB_EMAIL_ID = PSCB_EMAIL_ID,",
+				"          t_PHRMCY_SYS_IVR_DTA_STRT_DT = PHRMCY_SYS_IVR_DTA_STRT_DT,",
+				"          t_PHRMCY_SYS_IVR_DTA_STRT_QTR = PHRMCY_SYS_IVR_DTA_STRT_QTR,",
+				"          t_PHRMCY_SYS_IVR_DTA_STRT_YR = PHRMCY_SYS_IVR_DTA_STRT_YR,",
+				"          t_PHRMCY_AGE = PHRMCY_AGE,",
+				"          t_DEAL_ID = DEAL_ID,",
+				"          t_DEAL_TYPE_CD = DEAL_TYPE_CD,",
+				"          t_DEAL_NUMBER = DEAL_NUMBER,",
+				"          t_LANG_CD = LANG_CD,",
+				"          t_LANG_DESC = LANG_DESC,",
+				"          t_RCD_CRT_TMS = RCD_CRT_TMS,",
+				"          t_RCD_MOD_TMS = RCD_MOD_TMS,",
+				"          START_DATE,",
+				"          END_DATE,",
+				"          TargetHash",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select3",
+				"select2 derive(SourceHash = md5(PHRMCY_ADDR_ZIP_CD)) ~> derivedColumn3",
+				"derivedColumn3 select(mapColumn(",
+				"          PHRMCY_NAT_PROV_ID_NBR,",
+				"          PHRMCY_NCPDP_NBR,",
+				"          PTNT_CD,",
+				"          PSCB_FIRST_NM,",
+				"          PSCB_LAST_NM,",
+				"          PHRMCY_NM,",
+				"          PHRMCY_ADDR_ZIP_CD,",
+				"          PHRMCY_ADDR_CITY_NM,",
+				"          PHRMCY_ADDR_ST_CD,",
+				"          PHRMCY_ADDR_ST_NAME,",
+				"          PHRMCY_ADDR_ZNE_NM,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT,",
+				"          deal_id = select2@deal_id,",
+				"          deal_nbr,",
+				"          LANG_ID,",
+				"          LANG_CD,",
+				"          LANG_DESC,",
+				"          src_deal_id,",
+				"          PINT_ID,",
+				"          PHRMCY_ADDR_ST_NM,",
+				"          PSCB_EMAIL_ID,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_QTR,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_YR,",
+				"          PHRMCY_AGE,",
+				"          DEAL_ID = select2@DEAL_ID,",
+				"          DEAL_TYPE_CD,",
+				"          DEAL_NUMBER,",
+				"          RCD_CRT_TMS,",
+				"          RCD_MOD_TMS,",
+				"          SourceHash",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select4",
+				"split1@newinsert derive(StartDate = currentDate()) ~> derivedColumn4",
+				"split1@existing derive(END_DATE = currentDate()) ~> derivedColumn5",
+				"derivedColumn5 alterRow(updateIf(1==1)) ~> alterRow1",
+				"derivedColumn4 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> DIMPTNT"
 			]
 		}
 	}
