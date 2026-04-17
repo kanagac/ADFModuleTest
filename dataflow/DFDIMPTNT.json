@@ -125,9 +125,10 @@
 				"          PHRMCY_ADDR_ZNE_NM1 = initCap(PHRMCY_ADDR_ZNE_NM),",
 				"          PHRMCY_ADDR_ZIP_CD1 = right(lpad(toString(PHRMCY_ADDR_ZIP_CD), 5, '0'),5),",
 				"          PSCB_EMAIL_ID1 = concat(substring(PSCB_FIRST_NM,ceil(length(PSCB_FIRST_NM)/2)), left(PSCB_LAST_NM, 1),'@UN.com'),",
-				"          PHRMCY_SYS_IVR_DTA_STRT_DT1 = toDate(PHRMCY_SYS_IVR_DTA_STRT_DT,'dd-MMM-yyyy','en-us'),",
-				"          PHRMCY_SYS_IVR_DTA_STRT_QTR1 = toDate(PHRMCY_SYS_IVR_DTA_STRT_DT, 'QN-YYYY', 'en-us'),",
-				"          PHRMCY_SYS_IVR_DTA_STRT_YR1 = year(PHRMCY_SYS_IVR_DTA_STRT_DT)) ~> SRCPHRMCYDerivedColumn"
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT1 = toDate(PHRMCY_SYS_IVR_DTA_STRT_DT),",
+				"          PHRMCY_SYS_IVR_DTA_STRT_QTR1 = concat('Q',toString(toInteger(round(month(PHRMCY_SYS_IVR_DTA_STRT_DT)/3))),'-',toString(year(PHRMCY_SYS_IVR_DTA_STRT_DT))),",
+				"          PHRMCY_SYS_IVR_DTA_STRT_YR1 = year(PHRMCY_SYS_IVR_DTA_STRT_DT),",
+				"          PHRMCY_AGE1 = minus(currentDate(),toDate(PHRMCY_SYS_IVR_DTA_STRT_DT))) ~> SRCPHRMCYDerivedColumn"
 			]
 		}
 	}
