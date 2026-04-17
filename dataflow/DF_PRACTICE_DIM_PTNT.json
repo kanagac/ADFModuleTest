@@ -24,15 +24,31 @@
 						"type": "DatasetReference"
 					},
 					"name": "SourceLanguage"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SERVER_SRC",
+						"type": "DatasetReference"
+					},
+					"name": "DimPtnt"
 				}
 			],
 			"sinks": [],
 			"transformations": [
 				{
+					"name": "PhrmcyStatusJoin"
+				},
+				{
 					"name": "PhrmcyLanguageJoin"
 				},
 				{
-					"name": "PhrmcyStatusJoin"
+					"name": "Transformations"
+				},
+				{
+					"name": "SelectRequiredColumns"
+				},
+				{
+					"name": "SrcTgtJoin"
 				}
 			],
 			"scriptLines": [
@@ -75,17 +91,95 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> SourceLanguage",
-				"SourcePhrmcy, SourceLanguage join(SourcePhrmcy@LANG_CD == SourceLanguage@LANG_CD,",
-				"     joinType:'left',",
-				"     matchType:'exact',",
-				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> PhrmcyLanguageJoin",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> DimPtnt",
 				"SourcePhrmcy, SourceStatus join(SourcePhrmcy@DEAL_ID == SourceStatus@deal_id",
 				"     && SourcePhrmcy@DEAL_ID == deal_nbr,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> PhrmcyStatusJoin"
+				"     broadcast: 'auto')~> PhrmcyStatusJoin",
+				"PhrmcyStatusJoin, SourceLanguage join(SourcePhrmcy@LANG_CD == SourceLanguage@LANG_CD,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> PhrmcyLanguageJoin",
+				"PhrmcyLanguageJoin derive(PTNT_ID = toInteger(replace(PTNT_CD, ' ', '')),",
+				"          PTNT_CD = substring(PTNT_CD, length(PTNT_CD) - 4, 4),",
+				"          PHRMCY_NAT_PROV_ID_NBR = iif(\r",
+				"    isNull(PHRMCY_NAT_PROV_ID_NBR),\r",
+				"    'UNK',\r",
+				"    PHRMCY_NAT_PROV_ID_NBR\r",
+				"),",
+				"          PHRMCY_NM = replace(replace(replace(replace(PSCB_LAST_NM, '-', ' '), '&', ' '), ',', ' '), \"'\", ' '),",
+				"          PHRMCY_ADDR_ST_NAME = initCap(PHRMCY_ADDR_ST_NAME),",
+				"          PHRMCY_ADDR_ZNE_NM = initCap(PHRMCY_ADDR_ZNE_NM),",
+				"          PHRMCY_ADDR_ZIP_CD = lpad(toString(PHRMCY_ADDR_ZIP_CD), 5, '0')\r",
+				"\r",
+				"\r",
+				",",
+				"          PSCB_EMAIL_ID = concat(\r",
+				"    left(PSCB_FIRST_NM, length(PSCB_FIRST_NM) / 2),\r",
+				"    left(PSCB_LAST_NM, 1),\r",
+				"    '@UN.com'    \r",
+				")\r",
+				",",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT = toDate(\r",
+				"    toString(PHRMCY_SYS_IVR_DTA_STRT_DT),\r",
+				"    'dd-MMM-yyyy'\r",
+				"),",
+				"          PHRMCY_SYS_IVR_DTA_STRT_QTR = toDate(\r",
+				"    toString(PHRMCY_SYS_IVR_DTA_STRT_DT),\r",
+				"    'qn-yyyy'\r",
+				"),",
+				"          PHRMCY_SYS_IVR_DTA_STRT_YR = year(PHRMCY_SYS_IVR_DTA_STRT_DT),",
+				"          PHRMCY_AGE = year(PHRMCY_SYS_IVR_DTA_STRT_DT) - year(currentDate()),",
+				"          DEAL_ID = case(\r",
+				"    !isNull(SourcePhrmcy@DEAL_ID), 'exists',\r",
+				"    !isNull(SourceStatus@deal_id), 'exists',\r",
+				"    !isNull(deal_nbr), 'exists',\r",
+				"    'not exists'\r",
+				"),",
+				"          DEAL_TYPE_CD = left(deal_nbr, 2),",
+				"          DEAL_NUMBER = substring(\r",
+				"    deal_nbr,\r",
+				"    3,\r",
+				"    length(deal_nbr)\r",
+				")\r",
+				"\r",
+				") ~> Transformations",
+				"Transformations select(mapColumn(",
+				"          PTNT_CD,",
+				"          PTNT_ID,",
+				"          PHRMCY_NCPDP_NBR,",
+				"          PHRMCY_NAT_PROV_ID_NBR,",
+				"          PSCB_FIRST_NM,",
+				"          PSCB_LAST_NM,",
+				"          PHRMCY_NM,",
+				"          PHRMCY_ADDR_CITY_NM,",
+				"          PHRMCY_ADDR_ST_NAME,",
+				"          PHRMCY_ADDR_ZNE_NM,",
+				"          PHRMCY_ADDR_ZIP_CD,",
+				"          PSCB_EMAIL_ID,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_QTR,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_YR,",
+				"          PHRMCY_AGE,",
+				"          DEAL_ID = Transformations@DEAL_ID,",
+				"          DEAL_TYPE_CD,",
+				"          DEAL_NUMBER,",
+				"          LANG_CD = SourceLanguage@LANG_CD,",
+				"          LANG_DESC",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectRequiredColumns",
+				"SelectRequiredColumns, DimPtnt join(PTNT_ID == ERROR_FUNCTION(''),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> SrcTgtJoin"
 			]
 		}
 	}
