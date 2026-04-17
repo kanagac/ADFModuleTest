@@ -1,0 +1,28 @@
+{
+	"name": "DS_PTNT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQLSERVER",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"P_server": "systechtraining.database.windows.net",
+				"P_Db": "PTNT"
+			}
+		},
+		"parameters": {
+			"P_Table": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": {
+				"value": "@dataset().P_Table",
+				"type": "Expression"
+			}
+		}
+	}
+}

@@ -1,0 +1,25 @@
+{
+	"name": "DS_STATUS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQLSERVER",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "deal_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "deal_nbr",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "STATUS"
+		}
+	}
+}

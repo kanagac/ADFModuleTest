@@ -1,0 +1,30 @@
+{
+	"name": "DS_LULANGUAGE",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQLSERVER",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "LANG_ID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "LANG_CD",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LANG_DESC",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "LU_LANGUAGE"
+		}
+	}
+}

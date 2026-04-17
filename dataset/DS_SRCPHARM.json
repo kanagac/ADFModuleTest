@@ -1,0 +1,85 @@
+{
+	"name": "DS_SRCPHARM",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQLSERVER",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [
+			{
+				"name": "PHRMCY_NAT_PROV_ID_NBR",
+				"type": "varchar"
+			},
+			{
+				"name": "PHRMCY_NCPDP_NBR",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "PTNT_CD",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PSCB_FIRST_NM",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PSCB_LAST_NM",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LANG_CD",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DEAL_ID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PHRMCY_NM",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PHRMCY_ST_ADDR_LINE1_TXT",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PHRMCY_ADDR_ZIP_CD",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "PHRMCY_ADDR_CITY_NM",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PHRMCY_ADDR_ST_CD",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PHRMCY_ADDR_ST_NAME",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PHRMCY_ADDR_ZNE_CD",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PHRMCY_ADDR_ZNE_NM",
+				"type": "nvarchar"
+			},
+			{
+				"name": "PHRMCY_SYS_IVR_DTA_STRT_DT",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "SRC_PHRMCY"
+		}
+	}
+}

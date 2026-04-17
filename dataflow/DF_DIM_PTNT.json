@@ -1,0 +1,164 @@
+{
+	"name": "DF_DIM_PTNT",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_STATUS",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SRCPHARM",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_LULANGUAGE",
+						"type": "DatasetReference"
+					},
+					"name": "source3"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "join3"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          deal_id as string,",
+				"          deal_nbr as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source(output(",
+				"          PHRMCY_NAT_PROV_ID_NBR as string,",
+				"          PHRMCY_NCPDP_NBR as double,",
+				"          PTNT_CD as string,",
+				"          PSCB_FIRST_NM as string,",
+				"          PSCB_LAST_NM as string,",
+				"          LANG_CD as string,",
+				"          DEAL_ID as string,",
+				"          PHRMCY_NM as string,",
+				"          PHRMCY_ST_ADDR_LINE1_TXT as string,",
+				"          PHRMCY_ADDR_ZIP_CD as double,",
+				"          PHRMCY_ADDR_CITY_NM as string,",
+				"          PHRMCY_ADDR_ST_CD as string,",
+				"          PHRMCY_ADDR_ST_NAME as string,",
+				"          PHRMCY_ADDR_ZNE_CD as string,",
+				"          PHRMCY_ADDR_ZNE_NM as string,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source2",
+				"source(output(",
+				"          LANG_ID as integer,",
+				"          LANG_CD as string,",
+				"          LANG_DESC as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source3",
+				"source1, source2 join(source1@deal_id == source2@DEAL_ID",
+				"     && deal_nbr == source2@DEAL_ID,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"source3, source2 join(source3@LANG_CD == source2@LANG_CD,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join1, join2 join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join3",
+				"join3 select(mapColumn(",
+				"          deal_id = source1@deal_id,",
+				"          deal_nbr,",
+				"          PHRMCY_NAT_PROV_ID_NBR = source2@PHRMCY_NAT_PROV_ID_NBR,",
+				"          PHRMCY_NCPDP_NBR = source2@PHRMCY_NCPDP_NBR,",
+				"          PTNT_CD = source2@PTNT_CD,",
+				"          PSCB_FIRST_NM = source2@PSCB_FIRST_NM,",
+				"          PSCB_LAST_NM = source2@PSCB_LAST_NM,",
+				"          LANG_CD = source2@LANG_CD,",
+				"          DEAL_ID = source2@DEAL_ID,",
+				"          PHRMCY_NM = source2@PHRMCY_NM,",
+				"          PHRMCY_ST_ADDR_LINE1_TXT = source2@PHRMCY_ST_ADDR_LINE1_TXT,",
+				"          PHRMCY_ADDR_ZIP_CD = source2@PHRMCY_ADDR_ZIP_CD,",
+				"          PHRMCY_ADDR_CITY_NM = source2@PHRMCY_ADDR_CITY_NM,",
+				"          PHRMCY_ADDR_ST_CD = source2@PHRMCY_ADDR_ST_CD,",
+				"          PHRMCY_ADDR_ST_NAME = source2@PHRMCY_ADDR_ST_NAME,",
+				"          PHRMCY_ADDR_ZNE_CD = source2@PHRMCY_ADDR_ZNE_CD,",
+				"          PHRMCY_ADDR_ZNE_NM = source2@PHRMCY_ADDR_ZNE_NM,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT = source2@PHRMCY_SYS_IVR_DTA_STRT_DT,",
+				"          LANG_ID,",
+				"          LANG_CD = source3@LANG_CD,",
+				"          LANG_DESC,",
+				"          PHRMCY_NAT_PROV_ID_NBR,",
+				"          PHRMCY_NCPDP_NBR,",
+				"          PTNT_CD,",
+				"          PSCB_FIRST_NM,",
+				"          PSCB_LAST_NM,",
+				"          LANG_CD = source2@LANG_CD,",
+				"          DEAL_ID,",
+				"          PHRMCY_NM,",
+				"          PHRMCY_ST_ADDR_LINE1_TXT,",
+				"          PHRMCY_ADDR_ZIP_CD,",
+				"          PHRMCY_ADDR_CITY_NM,",
+				"          PHRMCY_ADDR_ST_CD,",
+				"          PHRMCY_ADDR_ST_NAME,",
+				"          PHRMCY_ADDR_ZNE_CD,",
+				"          PHRMCY_ADDR_ZNE_NM,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(PTNT_ID = toInteger(regexReplace(PTNT_CD, \"[_d{1}]\",\"\")),",
+				"          PTNT_CD = right(PTNT_CD,4),",
+				"          PHRMCY_NAT_PROV_ID_NBR = iif(isNull(PHRMCY_NAT_PROV_ID_NBR),'UNK',PHRMCY_NAT_PROV_ID_NBR),",
+				"          PHRMCY_NM = regexReplace(PHRMCY_NM, \"[,-'&]\", \" \"),",
+				"          PHRMCY_ADDR_CITY_NM = ERROR_FUNCTION('case(like(PHRMCY_ADDR_CITY_NM,__SINGLE_QUOTE__% __SINGLE_QUOTE__,__NEW_LINE_R____NEW_LINE_N__                concat(left(PHRMCY_ADDR_CITY_NM,1),left((PHRMCY_ADDR_CITY_NM.split(\" \")[2]),1)),__NEW_LINE_R____NEW_LINE_N__                left(PHRMCY_ADDR_CITY_NM,3))'),",
+				"          PHRMCY_ADDR_ST_NAME = initCap(PHRMCY_ADDR_ST_NAME),",
+				"          PHRMCY_ADDR_ZNE_NM = initCap(PHRMCY_ADDR_ZNE_NM),",
+				"          PHRMCY_ADDR_ZIP_CD = case(length(toString(PHRMCY_ADDR_ZIP_CD)) < 5, lpad(toString(PHRMCY_ADDR_ZIP_CD), 5, \"0\"),toString(PHRMCY_ADDR_ZIP_CD)),",
+				"          PSCB_FIRST_NM = concat(left(PSCB_FIRST_NM,length(PSCB_FIRST_NM)/2),left(PSCB_LAST_NM,1),'@UN.com'),",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT = toDate(PHRMCY_SYS_IVR_DTA_STRT_DT),",
+				"          PHRMCY_SYS_IVR_DTA_STRT_QTR = ERROR_FUNCTION('concat(__SINGLE_QUOTE__Q__SINGLE_QUOTE__,(__NEW_LINE_R____NEW_LINE_N__        (case(between(month(PHRMCY_SYS_IVR_DTA_STRT_DT), 1, 3),__SINGLE_QUOTE__1__SINGLE_QUOTE__,__NEW_LINE_R____NEW_LINE_N__        case(between(month(PHRMCY_SYS_IVR_DTA_STRT_DT), 4, 6),__SINGLE_QUOTE__2__SINGLE_QUOTE__),__NEW_LINE_R____NEW_LINE_N__        case(between(month(PHRMCY_SYS_IVR_DTA_STRT_DT), 7, 9),__SINGLE_QUOTE__3__SINGLE_QUOTE__),__SINGLE_QUOTE__4__SINGLE_QUOTE__),__SINGLE_QUOTE__-__SINGLE_QUOTE__,toString(year(PHRMCY_SYS_IVR_DTA_STRT_DT)))'),",
+				"          PHRMCY_SYS_IVR_DTA_STRT_YR = year(PHRMCY_SYS_IVR_DTA_STRT_DT),",
+				"          PHRMCY_AGE =  year(currentDate()) - year(PHRMCY_SYS_IVR_DTA_STRT_DT),",
+				"          DEAL_ID = case(isNull(select1@deal_id) || isNull(deal_nbr),'not exist','exist'),",
+				"          deal_type_cd = left(deal_nbr,4),",
+				"          deal_number = substring(deal_nbr, 3, length(deal_nbr)-2),",
+				"          rcd_mod_tms = currentTimestamp()) ~> derivedColumn1"
+			]
+		}
+	}
+}
