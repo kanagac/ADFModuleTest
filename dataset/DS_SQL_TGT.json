@@ -1,0 +1,16 @@
+{
+	"name": "DS_SQL_TGT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_TGT_TABLE",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "Mod_User13",
+			"table": "Mod_Bootcamp_2026"
+		}
+	}
+}
