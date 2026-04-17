@@ -9,18 +9,54 @@
 						"referenceName": "SRC_TABLE",
 						"type": "DatasetReference"
 					},
+					"name": "STATUS"
+				},
+				{
+					"dataset": {
+						"referenceName": "SRC_TABLE",
+						"type": "DatasetReference"
+					},
 					"name": "srcphrmcy"
 				},
 				{
-					"name": "source1"
-				},
-				{
-					"name": "source2"
+					"dataset": {
+						"referenceName": "SRC_TABLE",
+						"type": "DatasetReference"
+					},
+					"name": "srclanguage"
 				}
 			],
-			"sinks": [],
-			"transformations": [],
+			"sinks": [
+				{
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "phrstatus"
+				},
+				{
+					"name": "multijoin"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select1"
+				}
+			],
 			"scriptLines": [
+				"source(output(",
+				"          deal_id as string,",
+				"          deal_nbr as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> STATUS",
 				"source(output(",
 				"          PHRMCY_NAT_PROV_ID_NBR as string,",
 				"          PHRMCY_NCPDP_NBR as double,",
@@ -43,10 +79,72 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> srcphrmcy",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source1",
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> source2"
+				"source(output(",
+				"          LANG_ID as integer,",
+				"          LANG_CD as string,",
+				"          LANG_DESC as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> srclanguage",
+				"srcphrmcy, STATUS join(srcphrmcy@DEAL_ID == STATUS@deal_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> phrstatus",
+				"phrstatus, srclanguage join(srcphrmcy@LANG_CD == srclanguage@LANG_CD,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> multijoin",
+				"multijoin filter(PHRMCY_ADDR_ZNE_CD == 'US'\r",
+				") ~> filter1",
+				"filter1 derive(PTNT_ID = toInteger(PTNT_CD),",
+				"          PTNT_CD = right(PTNT_CD, 4),",
+				"          PHRMCY_NAT_PROV_ID_NBR = coalesce(PHRMCY_NAT_PROV_ID_NBR,'UNK'),",
+				"          PHRMCY_NCPDP_NBR = PHRMCY_NCPDP_NBR,",
+				"          PSCB_FIRST_NM = PSCB_FIRST_NM,",
+				"          PSCB_LAST_NM = PSCB_LAST_NM,",
+				"          PHRMCY_NM = replace(PHRMCY_NM, '&', ' '),",
+				"          PHRMCY_ADDR_CITY_NM = case(PHRMCY_ADDR_CITY_NM=='',left(PHRMCY_ADDR_CITY_NM,1),left(PHRMCY_ADDR_CITY_NM,3)),",
+				"          PHRMCY_ADDR_ST_NM = initCap(PHRMCY_ADDR_ST_NAME),",
+				"          PHRMCY_ADDR_ZNE_NM = initCap(PHRMCY_ADDR_ZNE_NM),",
+				"          PHRMCY_ADDR_ZIP_CD = case(length(\"PHRMCY_ADDR_ZIP_CD\")< 5,lpad(\"PHRMCY_ADDR_ZIP_CD\",10, '0')),",
+				"          PSCB_EMAIL_ID = concat(PSCB_FIRST_NM,PSCB_LAST_NM),",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT = PHRMCY_SYS_IVR_DTA_STRT_DT) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          PHRMCY_NAT_PROV_ID_NBR,",
+				"          PHRMCY_NCPDP_NBR,",
+				"          PTNT_CD,",
+				"          PSCB_FIRST_NM,",
+				"          PSCB_LAST_NM,",
+				"          LANG_CD = srcphrmcy@LANG_CD,",
+				"          DEAL_ID = srcphrmcy@DEAL_ID,",
+				"          PHRMCY_NM,",
+				"          PHRMCY_ST_ADDR_LINE1_TXT,",
+				"          PHRMCY_ADDR_ZIP_CD,",
+				"          PHRMCY_ADDR_CITY_NM,",
+				"          PHRMCY_ADDR_ST_CD,",
+				"          PHRMCY_ADDR_ST_NAME,",
+				"          PHRMCY_ADDR_ZNE_CD,",
+				"          PHRMCY_ADDR_ZNE_NM,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT,",
+				"          deal_id = STATUS@deal_id,",
+				"          deal_nbr,",
+				"          LANG_ID,",
+				"          LANG_CD = srclanguage@LANG_CD,",
+				"          LANG_DESC,",
+				"          PTNT_ID,",
+				"          PHRMCY_ADDR_ST_NM,",
+				"          PSCB_EMAIL_ID",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
