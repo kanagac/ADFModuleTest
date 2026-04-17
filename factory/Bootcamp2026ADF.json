@@ -1,0 +1,9 @@
+{
+	"name": "Bootcamp2026ADF",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "23b95f2f-b2eb-4b95-bcd7-b6cf17ad37d8",
+		"tenantId": "17dcec91-66ec-4c4b-a988-473694df546c"
+	}
+}
