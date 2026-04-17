@@ -33,7 +33,17 @@
 					"name": "TGTDIMPTNT"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"name": "NewSink"
+				},
+				{
+					"name": "UpdateSink"
+				},
+				{
+					"name": "NewVersionSink"
+				}
+			],
 			"transformations": [
 				{
 					"name": "LeftJoinPhrmcyStatus"
@@ -55,6 +65,24 @@
 				},
 				{
 					"name": "Transformations"
+				},
+				{
+					"name": "LEFTJOIN"
+				},
+				{
+					"name": "CONDITIONALSPLIT"
+				},
+				{
+					"name": "NewDerived"
+				},
+				{
+					"name": "ExpiredDerived"
+				},
+				{
+					"name": "AlterUpdate"
+				},
+				{
+					"name": "InsertDerived"
 				}
 			],
 			"scriptLines": [
@@ -189,7 +217,32 @@
 				"          PHRMCY_SYS_IVR_DTA_STRT_DT = toDate(PHRMCY_SYS_IVR_DTA_STRT_DT),",
 				"          PHRMCY_SYS_IVR_DTA_STRT_QTR = concat('Q',toString(addMonths(PHRMCY_SYS_IVR_DTA_STRT_DT, -3)),'-',toString(year(PHRMCY_SYS_IVR_DTA_STRT_DT))),",
 				"          PHRMCY_SYS_IVR_DTA_STRT_YR = toString(year(PHRMCY_SYS_IVR_DTA_STRT_DT)),",
-				"          PHRMCY_AGE = (PHRMCY_SYS_IVR_DTA_STRT_DT- currentDate())) ~> Transformations"
+				"          PHRMCY_AGE = (PHRMCY_SYS_IVR_DTA_STRT_DT- currentDate())) ~> Transformations",
+				"Transformations, TGTSurrogateKey join(Transformations@PTNT_CD == TGTDIMPTNT@PTNT_CD,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> LEFTJOIN",
+				"LEFTJOIN split(ERROR_FUNCTION(''),",
+				"     ERROR_FUNCTION(''),",
+				"     ERROR_FUNCTION(''),",
+				"     disjoint: false) ~> CONDITIONALSPLIT@(NewRecords, ExpiredRecords, OldRecords, UnchangedRecords)",
+				"CONDITIONALSPLIT@NewRecords derive() ~> NewDerived",
+				"CONDITIONALSPLIT@ExpiredRecords derive() ~> ExpiredDerived",
+				"ExpiredDerived alterRow(updateIf(true())) ~> AlterUpdate",
+				"CONDITIONALSPLIT@OldRecords derive() ~> InsertDerived",
+				"NewDerived sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> NewSink",
+				"AlterUpdate sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> UpdateSink",
+				"InsertDerived sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> NewVersionSink"
 			]
 		}
 	}
