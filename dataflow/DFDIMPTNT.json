@@ -1,0 +1,134 @@
+{
+	"name": "DFDIMPTNT",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Source_LS",
+						"type": "DatasetReference"
+					},
+					"name": "SourceSRCPHRMCY"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Source_LS",
+						"type": "DatasetReference"
+					},
+					"name": "SourceSTATUS"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Source_LS",
+						"type": "DatasetReference"
+					},
+					"name": "SourceLULANGUAGE"
+				},
+				{
+					"dataset": {
+						"referenceName": "DF_Target_LS",
+						"type": "DatasetReference"
+					},
+					"name": "TargetDIMPTNT"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "SRCPHRMCYDerivedColumn"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PHRMCY_NAT_PROV_ID_NBR as string,",
+				"          PHRMCY_NCPDP_NBR as double,",
+				"          PTNT_CD as string,",
+				"          PSCB_FIRST_NM as string,",
+				"          PSCB_LAST_NM as string,",
+				"          LANG_CD as string,",
+				"          DEAL_ID as string,",
+				"          PHRMCY_NM as string,",
+				"          PHRMCY_ST_ADDR_LINE1_TXT as string,",
+				"          PHRMCY_ADDR_ZIP_CD as double,",
+				"          PHRMCY_ADDR_CITY_NM as string,",
+				"          PHRMCY_ADDR_ST_CD as string,",
+				"          PHRMCY_ADDR_ST_NAME as string,",
+				"          PHRMCY_ADDR_ZNE_CD as string,",
+				"          PHRMCY_ADDR_ZNE_NM as string,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SourceSRCPHRMCY",
+				"source(output(",
+				"          deal_id as string,",
+				"          deal_nbr as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SourceSTATUS",
+				"source(output(",
+				"          LANG_ID as integer,",
+				"          LANG_CD as string,",
+				"          LANG_DESC as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SourceLULANGUAGE",
+				"source(output(",
+				"          PTNT_KEY as integer,",
+				"          PTNT_ID as integer,",
+				"          PTNT_CD as string,",
+				"          PHRMCY_NCPDP_NBR as integer,",
+				"          PHRMCY_NAT_PROV_ID_NBR as string,",
+				"          PSCB_FIRST_NM as string,",
+				"          PSCB_LAST_NM as string,",
+				"          PHRMCY_NM as string,",
+				"          PHRMCY_ADDR_CITY_NM as string,",
+				"          PHRMCY_ADDR_ST_NM as string,",
+				"          PHRMCY_ADDR_ZNE_NM as string,",
+				"          PHRMCY_ADDR_ZIP_CD as string,",
+				"          PSCB_EMAIL_ID as string,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT as string,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_QTR as string,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_YR as string,",
+				"          PHRMCY_AGE as integer,",
+				"          DEAL_ID as string,",
+				"          DEAL_TYPE_CD as string,",
+				"          DEAL_NUMBER as string,",
+				"          LANG_CD as string,",
+				"          LANG_DESC as string,",
+				"          RCD_CRT_TMS as timestamp,",
+				"          RCD_MOD_TMS as timestamp,",
+				"          START_DATE as timestamp,",
+				"          END_DATE as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TargetDIMPTNT",
+				"SourceSRCPHRMCY derive(PTNT_ID1 = split(PTNT_CD, '_')[1],",
+				"          PTNT_CD1 = right(PTNT_CD, 4),",
+				"          PHRMCY_NCPDP_NBR1 = PHRMCY_NCPDP_NBR,",
+				"          PHRMCY_NAT_PROV_ID_NBR1 = iif(isNull(PHRMCY_NAT_PROV_ID_NBR), 'UNK' , PHRMCY_NAT_PROV_ID_NBR)\r",
+				",",
+				"          PSCB_FIRST_NM1 = PSCB_FIRST_NM,",
+				"          PSCB_LAST_NM1 = PSCB_LAST_NM,",
+				"          PHRMCY_NM1 = regexReplace(PHRMCY_NM, '[-&,]', ' '),",
+				"          PHRMCY_ADDR_CITY_NM1 = iif(regexMatch(trim(PHRMCY_ADDR_CITY_NM), ' '), concat(left(regexSplit(PHRMCY_ADDR_CITY_NM,' ')[1],1),left(regexSplit(PHRMCY_ADDR_CITY_NM,' ')[2],1)), left(PHRMCY_ADDR_CITY_NM, 3))\r",
+				",",
+				"          PHRMCY_ADDR_ST_NM1 = initCap(PHRMCY_ADDR_ST_NAME),",
+				"          PHRMCY_ADDR_ZNE_NM1 = initCap(PHRMCY_ADDR_ZNE_NM),",
+				"          PHRMCY_ADDR_ZIP_CD1 = right(lpad(toString(PHRMCY_ADDR_ZIP_CD), 5, '0'),5),",
+				"          PSCB_EMAIL_ID1 = concat(substring(PSCB_FIRST_NM,ceil(length(PSCB_FIRST_NM)/2)), left(PSCB_LAST_NM, 1),'@UN.com'),",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT1 = toDate(PHRMCY_SYS_IVR_DTA_STRT_DT,'dd-MMM-yyyy','en-us'),",
+				"          PHRMCY_SYS_IVR_DTA_STRT_QTR1 = toDate(PHRMCY_SYS_IVR_DTA_STRT_DT, 'QN-YYYY', 'en-us'),",
+				"          PHRMCY_SYS_IVR_DTA_STRT_YR1 = year(PHRMCY_SYS_IVR_DTA_STRT_DT)) ~> SRCPHRMCYDerivedColumn"
+			]
+		}
+	}
+}
