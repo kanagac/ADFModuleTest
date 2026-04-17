@@ -1,0 +1,24 @@
+{
+	"name": "DS_SQL_TGT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_TGT",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"schema": {
+				"type": "string"
+			},
+			"table": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "Mod_User11",
+			"table": "DIM_PTNT"
+		}
+	}
+}

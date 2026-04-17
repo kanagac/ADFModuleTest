@@ -1,0 +1,180 @@
+{
+	"name": "DF_Q1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SRC",
+						"type": "DatasetReference"
+					},
+					"name": "PHRMCY"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SRC",
+						"type": "DatasetReference"
+					},
+					"name": "STATUS"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SRC",
+						"type": "DatasetReference"
+					},
+					"name": "LANGUAGE"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_TGT",
+						"type": "DatasetReference"
+					},
+					"name": "TARGET"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "PhrmcyStatus"
+				},
+				{
+					"name": "PhrmcyStatusLang"
+				},
+				{
+					"name": "UpdateDC"
+				},
+				{
+					"name": "SRCTGT"
+				},
+				{
+					"name": "Update"
+				},
+				{
+					"name": "Insert"
+				},
+				{
+					"name": "InsertDC"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PHRMCY_NAT_PROV_ID_NBR as string,",
+				"          PHRMCY_NCPDP_NBR as double,",
+				"          PTNT_CD as string,",
+				"          PSCB_FIRST_NM as string,",
+				"          PSCB_LAST_NM as string,",
+				"          LANG_CD as string,",
+				"          DEAL_ID as string,",
+				"          PHRMCY_NM as string,",
+				"          PHRMCY_ST_ADDR_LINE1_TXT as string,",
+				"          PHRMCY_ADDR_ZIP_CD as double,",
+				"          PHRMCY_ADDR_CITY_NM as string,",
+				"          PHRMCY_ADDR_ST_CD as string,",
+				"          PHRMCY_ADDR_ST_NAME as string,",
+				"          PHRMCY_ADDR_ZNE_CD as string,",
+				"          PHRMCY_ADDR_ZNE_NM as string,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> PHRMCY",
+				"source(output(",
+				"          deal_id as string,",
+				"          deal_nbr as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> STATUS",
+				"source(output(",
+				"          LANG_ID as integer,",
+				"          LANG_CD as string,",
+				"          LANG_DESC as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> LANGUAGE",
+				"source(output(",
+				"          PTNT_KEY as integer,",
+				"          PTNT_ID as integer,",
+				"          PTNT_CD as string,",
+				"          PHRMCY_NCPDP_NBR as integer,",
+				"          PHRMCY_NAT_PROV_ID_NBR as string,",
+				"          PSCB_FIRST_NM as string,",
+				"          PSCB_LAST_NM as string,",
+				"          PHRMCY_NM as string,",
+				"          PHRMCY_ADDR_CITY_NM as string,",
+				"          PHRMCY_ADDR_ST_NM as string,",
+				"          PHRMCY_ADDR_ZNE_NM as string,",
+				"          PHRMCY_ADDR_ZIP_CD as string,",
+				"          PSCB_EMAIL_ID as string,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT as string,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_QTR as string,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_YR as string,",
+				"          PHRMCY_AGE as integer,",
+				"          DEAL_ID as string,",
+				"          DEAL_TYPE_CD as string,",
+				"          DEAL_NUMBER as string,",
+				"          LANG_CD as string,",
+				"          LANG_DESC as string,",
+				"          RCD_CRT_TMS as timestamp,",
+				"          RCD_MOD_TMS as timestamp,",
+				"          START_DATE as timestamp,",
+				"          END_DATE as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> TARGET",
+				"PHRMCY, STATUS join(PHRMCY@DEAL_ID == STATUS@deal_id",
+				"     && PHRMCY@DEAL_ID == deal_nbr,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> PhrmcyStatus",
+				"PhrmcyStatus, LANGUAGE join(PHRMCY@LANG_CD == LANGUAGE@LANG_CD,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> PhrmcyStatusLang",
+				"Update derive(PTNT_ID = PTNT_ID,",
+				"          PTNT_CD = substring(PHRMCY@PTNT_CD,length(PHRMCY@PTNT_CD)-1, 4),",
+				"          PHRMCY_NCPDP_NBR = PHRMCY@PHRMCY_NCPDP_NBR,",
+				"          PHRMCY_NAT_PROV_ID_NBR = iif(\r",
+				"    isNull(PHRMCY@PHRMCY_NAT_PROV_ID_NBR),'UNK',PHRMCY@PHRMCY_NAT_PROV_ID_NBR\r",
+				"    )\r",
+				",",
+				"          PSCB_FIRST_NM = PHRMCY@PSCB_FIRST_NM,",
+				"          PSCB_LAST_NM = PHRMCY@PSCB_LAST_NM,",
+				"          PHRMCY_NM = replace(PHRMCY@PHRMCY_NM, '-', \" \"),",
+				"          PHRMCY_ADDRE_CITY_NM = PHRMCY@PHRMCY_ADDR_CITY_NM,",
+				"          PHRMCY_ADDR_ST_NM = initCap(PHRMCY_ADDR_ST_NAME),",
+				"          PHRMCY_ADDR_ZINE_NM = initCap((PHRMCY@PHRMCY_ADDR_ZNE_NM)),",
+				"          PHRMCY_ADDR_ZIP_CD = PHRMCY@PHRMCY_ADDR_ZIP_CD,",
+				"          PSCB_EMAIL_ID = PSCB_EMAIL_ID,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT = PHRMCY@PHRMCY_SYS_IVR_DTA_STRT_DT,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_QTR = PHRMCY_SYS_IVR_DTA_STRT_QTR,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_YR = PHRMCY_SYS_IVR_DTA_STRT_YR,",
+				"          DEAL_ID = iif(\r",
+				"    !isNull(PHRMCY@DEAL_ID),\r",
+				"    PHRMCY@DEAL_ID,'0'\r",
+				"),",
+				"          DEAL_TYPE_CD = substring(DEAL_TYPE_CD, 1, 2),",
+				"          DEAL_NUMBER = DEAL_NUMBER,",
+				"          LANG_CD = PHRMCY@LANG_CD,",
+				"          PHRMCY_AGE = PHRMCY_AGE) ~> UpdateDC",
+				"PhrmcyStatusLang, TARGET join(PHRMCY@PTNT_CD == TARGET@PTNT_CD,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> SRCTGT",
+				"SRCTGT filter(ERROR_FUNCTION('')) ~> Update",
+				"SRCTGT filter(ERROR_FUNCTION('')) ~> Insert",
+				"Insert derive() ~> InsertDC"
+			]
+		}
+	}
+}
