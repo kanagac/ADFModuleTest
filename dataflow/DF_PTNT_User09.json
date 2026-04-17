@@ -40,6 +40,9 @@
 						"type": "DatasetReference"
 					},
 					"name": "DIMPTNT"
+				},
+				{
+					"name": "sink1"
 				}
 			],
 			"transformations": [
@@ -344,7 +347,11 @@
 				"     upsertable:false,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> DIMPTNT"
+				"     skipDuplicateMapOutputs: true) ~> DIMPTNT",
+				"alterRow1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
