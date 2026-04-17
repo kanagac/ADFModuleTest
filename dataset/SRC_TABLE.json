@@ -1,5 +1,5 @@
 {
-	"name": "SqlServerTable1",
+	"name": "SRC_TABLE",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_SRC_TABLE",

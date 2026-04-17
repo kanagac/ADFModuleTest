@@ -1,5 +1,5 @@
 {
-	"name": "SqlServerTable2",
+	"name": "TARGET_TABLE",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_TRGT_TABLE",
@@ -14,7 +14,7 @@
 		"type": "SqlServerTable",
 		"schema": [],
 		"typeProperties": {
-			"schema": "dbo",
+			"schema": "",
 			"table": {
 				"value": "@dataset().tablename",
 				"type": "Expression"
