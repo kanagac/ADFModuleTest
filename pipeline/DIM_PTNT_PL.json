@@ -1,0 +1,49 @@
+{
+	"name": "DIM_PTNT_PL",
+	"properties": {
+		"activities": [
+			{
+				"name": "DF_DIM_PTNT",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DFDIMPTNT",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SourceSRCPHRMCY": {
+								"tablename": "SRC_PHRMCY"
+							},
+							"SourceSTATUS": {
+								"tablename": "STATUS"
+							},
+							"SourceLULANGUAGE": {
+								"tablename": "LU_LANGUAGE"
+							},
+							"TargetDIMPTNT": {
+								"tabletgt": "DIM_PTNT"
+							},
+							"Load": {
+								"tabletgt": "DIM_PTNT"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
