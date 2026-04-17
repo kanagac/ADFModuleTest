@@ -17,7 +17,37 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "DF_PTNT_User09",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCPHRMCY": {
+								"TableName": " dbo.SRC_PHRMCY"
+							},
+							"STATUS": {
+								"TableName": "dbo.STATUS"
+							},
+							"LULANGUAGE": {
+								"TableName": "dbo.LU_LANGUAGE"
+							},
+							"Target": {
+								"TableName": "DIM_PINT_User09"
+							},
+							"DIMPTNT": {
+								"TableName": "DIM_PINT_User09"
+							},
+							"Dpint": {
+								"TableName": "DIM_PINT_User09"
+							},
+							"sink1": {
+								"TableName": "DIM_PINT_User09"
+							}
+						},
+						"linkedServiceParameters": {
+							"Target": {
+								"schemaLinkedService": {
+									"TableName": "DIM_PINT_User09"
+								}
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
