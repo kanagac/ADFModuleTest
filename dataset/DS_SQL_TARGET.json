@@ -1,0 +1,16 @@
+{
+	"name": "DS_SQL_TARGET",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_TARGET",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "Mod_User5",
+			"table": "DIM_PTNT_User5"
+		}
+	}
+}
