@@ -17,7 +17,24 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "DF_PRACTICE_DIM_PTNT",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SourcePhrmcy": {
+								"TABLE_NAME": "SRC_PHRMCY"
+							},
+							"SourceStatus": {
+								"TABLE_NAME": "STATUS"
+							},
+							"SourceLanguage": {
+								"TABLE_NAME": "LU_LANGUAGE"
+							},
+							"DimPtnt": {
+								"TABLE_NAME": "PTNT_KEY"
+							},
+							"load": {
+								"TABLE_NAME": "DIM_PTNT"
+							}
+						}
 					},
 					"integrationRuntime": {
 						"referenceName": "BootcampModuleTest",
