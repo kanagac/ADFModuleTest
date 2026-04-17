@@ -1,0 +1,24 @@
+{
+	"name": "DF_Target_LS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_Target_User3",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"tabletgt": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "Mod_User3",
+			"table": {
+				"value": "@dataset().tabletgt",
+				"type": "Expression"
+			}
+		}
+	}
+}
