@@ -1,0 +1,12 @@
+{
+	"name": "DS_SQL_SERVER_TGT",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_SERVER_TGT",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	}
+}

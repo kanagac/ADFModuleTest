@@ -1,0 +1,92 @@
+{
+	"name": "DF_PRACTICE_DIM_PTNT",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SERVER_SRC",
+						"type": "DatasetReference"
+					},
+					"name": "SourcePhrmcy"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SERVER_SRC",
+						"type": "DatasetReference"
+					},
+					"name": "SourceStatus"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_SERVER_SRC",
+						"type": "DatasetReference"
+					},
+					"name": "SourceLanguage"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "PhrmcyLanguageJoin"
+				},
+				{
+					"name": "PhrmcyStatusJoin"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PHRMCY_NAT_PROV_ID_NBR as string,",
+				"          PHRMCY_NCPDP_NBR as double,",
+				"          PTNT_CD as string,",
+				"          PSCB_FIRST_NM as string,",
+				"          PSCB_LAST_NM as string,",
+				"          LANG_CD as string,",
+				"          DEAL_ID as string,",
+				"          PHRMCY_NM as string,",
+				"          PHRMCY_ST_ADDR_LINE1_TXT as string,",
+				"          PHRMCY_ADDR_ZIP_CD as double,",
+				"          PHRMCY_ADDR_CITY_NM as string,",
+				"          PHRMCY_ADDR_ST_CD as string,",
+				"          PHRMCY_ADDR_ST_NAME as string,",
+				"          PHRMCY_ADDR_ZNE_CD as string,",
+				"          PHRMCY_ADDR_ZNE_NM as string,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SourcePhrmcy",
+				"source(output(",
+				"          deal_id as string,",
+				"          deal_nbr as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SourceStatus",
+				"source(output(",
+				"          LANG_ID as integer,",
+				"          LANG_CD as string,",
+				"          LANG_DESC as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> SourceLanguage",
+				"SourcePhrmcy, SourceLanguage join(SourcePhrmcy@LANG_CD == SourceLanguage@LANG_CD,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> PhrmcyLanguageJoin",
+				"SourcePhrmcy, SourceStatus join(SourcePhrmcy@DEAL_ID == SourceStatus@deal_id",
+				"     && SourcePhrmcy@DEAL_ID == deal_nbr,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> PhrmcyStatusJoin"
+			]
+		}
+	}
+}
