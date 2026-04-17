@@ -206,8 +206,8 @@
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> join3",
-				"join3 split(ERROR_FUNCTION(''),",
-				"     disjoint: false) ~> split1@(, )"
+				"join3 split(isNull(t_PTNT_CD),",
+				"     disjoint: false) ~> split1@(newinsert, existing)"
 			]
 		}
 	}
