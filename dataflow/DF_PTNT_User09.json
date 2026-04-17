@@ -42,6 +42,13 @@
 					"name": "DIMPTNT"
 				},
 				{
+					"name": "Dpint"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_Target_SQl",
+						"type": "DatasetReference"
+					},
 					"name": "sink1"
 				}
 			],
@@ -87,6 +94,12 @@
 				},
 				{
 					"name": "alterRow1"
+				},
+				{
+					"name": "derivedColumn6"
+				},
+				{
+					"name": "alterRow2"
 				}
 			],
 			"scriptLines": [
@@ -339,6 +352,8 @@
 				"split1@newinsert derive(StartDate = currentDate()) ~> derivedColumn4",
 				"split1@existing derive(END_DATE = currentDate()) ~> derivedColumn5",
 				"derivedColumn5 alterRow(updateIf(1==1)) ~> alterRow1",
+				"split1@existing derive(StartDate = currentDate()) ~> derivedColumn6",
+				"derivedColumn6 alterRow(insertIf(1==1)) ~> alterRow2",
 				"derivedColumn4 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     deletable:false,",
@@ -347,11 +362,23 @@
 				"     upsertable:false,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> DIMPTNT",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 2) ~> DIMPTNT",
 				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 1) ~> Dpint",
+				"alterRow2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     saveOrder: 3) ~> sink1"
 			]
 		}
 	}
