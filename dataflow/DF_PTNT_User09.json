@@ -24,6 +24,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "LULANGUAGE"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_Source_Table",
+						"type": "DatasetReference"
+					},
+					"name": "Target"
 				}
 			],
 			"sinks": [],
@@ -39,6 +46,12 @@
 				},
 				{
 					"name": "derivedColumn1"
+				},
+				{
+					"name": "select2"
+				},
+				{
+					"name": "join3"
 				}
 			],
 			"scriptLines": [
@@ -81,6 +94,10 @@
 				"     validateSchema: false,",
 				"     isolationLevel: 'READ_UNCOMMITTED',",
 				"     format: 'table') ~> LULANGUAGE",
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> Target",
 				"SRCPHRMCY, STATUS join(SRCPHRMCY@DEAL_ID == STATUS@deal_id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
@@ -121,7 +138,7 @@
 				"),",
 				"          PHRMCY_NM = replace(replace(replace(replace(PHRMCY_NM,'-',' '),'&',' '),',',' '),\"'''\",' '),",
 				"          PHRMCY_ADDR_CITY_NM = iif(\r",
-				"    split(PHRMCY_ADDR_CITY_NM,' ') ,\r",
+				"    PHRMCY_ADDR_CITY_NM==' ',\r",
 				"    concat(left(PHRMCY_ADDR_CITY_NM,1),left(split(PHRMCY_ADDR_CITY_NM,' ')[1],1)),\r",
 				"    left(PHRMCY_ADDR_CITY_NM,3)\r",
 				"),",
@@ -136,7 +153,56 @@
 				"          PHRMCY_SYS_IVR_DTA_STRT_QTR = toString(concat('Q1',toString(year(toDate(PHRMCY_SYS_IVR_DTA_STRT_DT))))),",
 				"          PHRMCY_SYS_IVR_DTA_STRT_YR = toString(year(toDate(PHRMCY_SYS_IVR_DTA_STRT_DT))),",
 				"          PHRMCY_AGE = toString(year(currentDate()-(PHRMCY_SYS_IVR_DTA_STRT_DT))),",
-				"          DEAL_ID = iif()) ~> derivedColumn1"
+				"          DEAL_ID = deal_id\r",
+				",",
+				"          DEAL_TYPE_CD = left(deal_nbr,2),",
+				"          DEAL_NUMBER = substring(deal_nbr,3,length(deal_nbr)-2),",
+				"          RCD_CRT_TMS = currentDate(),",
+				"          PTNT_ID = PTNT_CD,",
+				"          PHRMCY_NCPDP_NBR = PHRMCY_NCPDP_NBR,",
+				"          PSCB_FIRST_NM = PSCB_FIRST_NM,",
+				"          PSCB_LAST_NM = PSCB_LAST_NM,",
+				"          LANG_CD = LANG_CD,",
+				"          LANG_DESC = LANG_DESC,",
+				"          RCD_MOD_TMS = ERROR_FUNCTION('')) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          PHRMCY_NAT_PROV_ID_NBR,",
+				"          PHRMCY_NCPDP_NBR,",
+				"          PTNT_CD,",
+				"          PSCB_FIRST_NM,",
+				"          PSCB_LAST_NM,",
+				"          PHRMCY_NM,",
+				"          PHRMCY_ADDR_ZIP_CD,",
+				"          PHRMCY_ADDR_CITY_NM,",
+				"          PHRMCY_ADDR_ST_CD,",
+				"          PHRMCY_ADDR_ST_NAME,",
+				"          PHRMCY_ADDR_ZNE_NM,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT,",
+				"          deal_id = select1@deal_id,",
+				"          deal_nbr,",
+				"          LANG_ID,",
+				"          LANG_CD,",
+				"          LANG_DESC,",
+				"          src_deal_id,",
+				"          PINT_ID,",
+				"          PHRMCY_ADDR_ST_NM,",
+				"          PSCB_EMAIL_ID,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_QTR,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_YR,",
+				"          PHRMCY_AGE,",
+				"          DEAL_ID = derivedColumn1@DEAL_ID,",
+				"          DEAL_TYPE_CD,",
+				"          DEAL_NUMBER,",
+				"          RCD_CRT_TMS,",
+				"          RCD_MOD_TMS",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select2",
+				"select2 join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join3"
 			]
 		}
 	}
