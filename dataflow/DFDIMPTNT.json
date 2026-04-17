@@ -33,7 +33,15 @@
 					"name": "TargetDIMPTNT"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DF_Target_LS",
+						"type": "DatasetReference"
+					},
+					"name": "Load"
+				}
+			],
 			"transformations": [
 				{
 					"name": "SRCPHRMCYDerivedColumn"
@@ -49,6 +57,12 @@
 				},
 				{
 					"name": "ThirdJoin"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "select"
 				}
 			],
 			"scriptLines": [
@@ -163,19 +177,61 @@
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> SelectSRCPHRMCY",
-				"SelectSRCPHRMCY, SourceSTATUS join(ERROR_FUNCTION('') == SourceSTATUS@deal_id,",
+				"SelectSRCPHRMCY, SourceSTATUS join(SelectSRCPHRMCY@DEAL_ID == SourceSTATUS@deal_id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
 				"     broadcast: 'auto')~> PhrmcyStatusJoin",
-				"PhrmcyStatusJoin derive(DEAL_ID1 = iif(isNull(deal_nbr) || isNull(DEAL_ID1), 'Exists', 'Not Exists'),",
+				"PhrmcyStatusJoin derive(DEAL_ID1 = iif(isNull(deal_nbr), 'Exists', 'Not Exists'),",
 				"          DEAL_TYPE_CD1 = left(deal_nbr, 2),",
 				"          DEAL_NUMBER1 = substring(deal_nbr, 3, length(deal_nbr))) ~> FirstJoinDC",
-				"FirstJoinDC join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"FirstJoinDC, SourceLULANGUAGE join(SelectSRCPHRMCY@LANG_CD == SourceLULANGUAGE@LANG_CD,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> ThirdJoin"
+				"     broadcast: 'auto')~> ThirdJoin",
+				"ThirdJoin derive(RCD_CRT_TMS = toDate(null()),",
+				"          RCD_MOD_TMS = toDate(null()),",
+				"          START_DATE = toDate(null()),",
+				"          END_DATE = toDate(null())) ~> derivedColumn1",
+				"derivedColumn1 select(mapColumn(",
+				"          PTNT_ID = PTNT_ID1,",
+				"          PTNT_CD = PTNT_CD1,",
+				"          PHRMCY_NCPDP_NBR = PHRMCY_NCPDP_NBR1,",
+				"          PHRMCY_NAT_PROV_ID_NBR = PHRMCY_NAT_PROV_ID_NBR1,",
+				"          PSCB_FIRST_NM = PSCB_FIRST_NM1,",
+				"          PSCB_LAST_NM = PSCB_LAST_NM1,",
+				"          PHRMCY_NM = PHRMCY_NM1,",
+				"          PHRMCY_ADDR_CITY_NM = PHRMCY_ADDR_CITY_NM1,",
+				"          PHRMCY_ADDR_ST_NM = PHRMCY_ADDR_ST_NM1,",
+				"          PHRMCY_ADDR_ZNE_NM = PHRMCY_ADDR_ZNE_NM1,",
+				"          PHRMCY_ADDR_ZIP_CD = PHRMCY_ADDR_ZIP_CD1,",
+				"          PSCB_EMAIL_ID = PSCB_EMAIL_ID1,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT = PHRMCY_SYS_IVR_DTA_STRT_DT1,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_QTR = PHRMCY_SYS_IVR_DTA_STRT_QTR1,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_YR = PHRMCY_SYS_IVR_DTA_STRT_YR1,",
+				"          PHRMCY_AGE = PHRMCY_AGE1,",
+				"          DEAL_ID = DEAL_ID1,",
+				"          DEAL_TYPE_CD = DEAL_TYPE_CD1,",
+				"          DEAL_NUMBER = DEAL_NUMBER1,",
+				"          LANG_CD = SourceLULANGUAGE@LANG_CD,",
+				"          LANG_DESC,",
+				"          RCD_CRT_TMS,",
+				"          RCD_MOD_TMS,",
+				"          START_DATE,",
+				"          END_DATE",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select",
+				"select sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> Load"
 			]
 		}
 	}
