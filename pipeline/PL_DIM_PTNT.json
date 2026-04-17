@@ -17,7 +17,50 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "DF_DIM_PTNT",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"PHRMCY": {
+								"TableName": "SRC_PHRMCY"
+							},
+							"STATUS": {
+								"TableName": "STATUS"
+							},
+							"LANG": {
+								"TableName": "LU_LANGUAGE"
+							},
+							"TARGETSCD": {
+								"tableName": "DIM_PTNT"
+							},
+							"sink1": {
+								"tableName": "DIM_PTNT"
+							},
+							"sink2": {
+								"tableName": "DIM_PTNT"
+							},
+							"sink3": {
+								"tableName": "DIM_PTNT"
+							},
+							"sink4": {
+								"tableName": "DIM_PTNT"
+							}
+						},
+						"linkedServiceParameters": {
+							"PHRMCY": {
+								"schemaLinkedService": {
+									"TableName": "SRC_PHRMCY"
+								}
+							},
+							"STATUS": {
+								"schemaLinkedService": {
+									"TableName": "STATUS"
+								}
+							},
+							"LANG": {
+								"schemaLinkedService": {
+									"TableName": "LU_LANGUAGE"
+								}
+							}
+						}
 					},
 					"integrationRuntime": {
 						"referenceName": "BootcampModuleTest",
