@@ -32,7 +32,7 @@
 						"referenceName": "SqlServerTable1",
 						"type": "DatasetReference"
 					},
-					"name": "sink1"
+					"name": "SNKTarget"
 				}
 			],
 			"transformations": [
@@ -120,7 +120,7 @@
 				"     upsertable:false,",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sink1"
+				"     skipDuplicateMapOutputs: true) ~> SNKTarget"
 			]
 		}
 	}
