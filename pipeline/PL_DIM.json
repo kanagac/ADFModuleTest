@@ -1,0 +1,52 @@
+{
+	"name": "PL_DIM",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "DF_DIM",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SRCPHRMCY": {
+								"tablename": "SRC_PHRMCY"
+							},
+							"STATUS": {
+								"tablename": "STATUS"
+							},
+							"LULANGUAGE": {
+								"tablename": "LU_LANGUAGE"
+							},
+							"TARGET": {
+								"tablename": "DIM_PTNT"
+							},
+							"sink1": {
+								"tablename": "DIM_PTNT"
+							},
+							"sink2": {
+								"tablename": "DIM_PTNT"
+							}
+						}
+					},
+					"integrationRuntime": {
+						"referenceName": "BootcampModuleTest",
+						"type": "IntegrationRuntimeReference"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
