@@ -1,0 +1,35 @@
+{
+	"name": "LS_SQLSERVER",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"parameters": {
+			"P_server": {
+				"type": "String"
+			},
+			"P_Db": {
+				"type": "String"
+			},
+			"P_Username": {
+				"type": "String"
+			},
+			"P_Password": {
+				"type": "String"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServer",
+		"typeProperties": {
+			"server": "@{linkedService().P_server}",
+			"database": "@{linkedService().P_Db}",
+			"encrypt": "mandatory",
+			"trustServerCertificate": false,
+			"authenticationType": "SQL",
+			"userName": "@{linkedService().P_Username}",
+			"password": "@{linkedService().P_Password}"
+		},
+		"connectVia": {
+			"referenceName": "BootcampModuleTest",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
