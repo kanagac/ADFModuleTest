@@ -1,0 +1,127 @@
+{
+	"name": "DF_Practice",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "SqlServerTable1",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "SqlServerTable1",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				},
+				{
+					"dataset": {
+						"referenceName": "SqlServerTable1",
+						"type": "DatasetReference"
+					},
+					"name": "source3"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "SqlServerTable1",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "join2"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          PHRMCY_NAT_PROV_ID_NBR as string,",
+				"          PHRMCY_NCPDP_NBR as double,",
+				"          PTNT_CD as string,",
+				"          PSCB_FIRST_NM as string,",
+				"          PSCB_LAST_NM as string,",
+				"          LANG_CD as string,",
+				"          DEAL_ID as string,",
+				"          PHRMCY_NM as string,",
+				"          PHRMCY_ST_ADDR_LINE1_TXT as string,",
+				"          PHRMCY_ADDR_ZIP_CD as double,",
+				"          PHRMCY_ADDR_CITY_NM as string,",
+				"          PHRMCY_ADDR_ST_CD as string,",
+				"          PHRMCY_ADDR_ST_NAME as string,",
+				"          PHRMCY_ADDR_ZNE_CD as string,",
+				"          PHRMCY_ADDR_ZNE_NM as string,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source1",
+				"source(output(",
+				"          deal_id as string,",
+				"          deal_nbr as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source2",
+				"source(output(",
+				"          LANG_ID as integer,",
+				"          LANG_CD as string,",
+				"          LANG_DESC as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source3",
+				"source1, source2 join(source1@DEAL_ID == source2@deal_id",
+				"     && source1@DEAL_ID == deal_nbr,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"source1, source3 join(source1@LANG_CD == source3@LANG_CD,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          PHRMCY_NAT_PROV_ID_NBR as string,",
+				"          PHRMCY_NCPDP_NBR as double,",
+				"          PTNT_CD as string,",
+				"          PSCB_FIRST_NM as string,",
+				"          PSCB_LAST_NM as string,",
+				"          LANG_CD as string,",
+				"          DEAL_ID as string,",
+				"          PHRMCY_NM as string,",
+				"          PHRMCY_ST_ADDR_LINE1_TXT as string,",
+				"          PHRMCY_ADDR_ZIP_CD as double,",
+				"          PHRMCY_ADDR_CITY_NM as string,",
+				"          PHRMCY_ADDR_ST_CD as string,",
+				"          PHRMCY_ADDR_ST_NAME as string,",
+				"          PHRMCY_ADDR_ZNE_CD as string,",
+				"          PHRMCY_ADDR_ZNE_NM as string,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
