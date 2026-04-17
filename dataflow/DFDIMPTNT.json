@@ -37,6 +37,18 @@
 			"transformations": [
 				{
 					"name": "SRCPHRMCYDerivedColumn"
+				},
+				{
+					"name": "SelectSRCPHRMCY"
+				},
+				{
+					"name": "PhrmcyStatusJoin"
+				},
+				{
+					"name": "FirstJoinDC"
+				},
+				{
+					"name": "ThirdJoin"
 				}
 			],
 			"scriptLines": [
@@ -128,7 +140,42 @@
 				"          PHRMCY_SYS_IVR_DTA_STRT_DT1 = toDate(PHRMCY_SYS_IVR_DTA_STRT_DT),",
 				"          PHRMCY_SYS_IVR_DTA_STRT_QTR1 = concat('Q',toString(toInteger(round(month(PHRMCY_SYS_IVR_DTA_STRT_DT)/3))),'-',toString(year(PHRMCY_SYS_IVR_DTA_STRT_DT))),",
 				"          PHRMCY_SYS_IVR_DTA_STRT_YR1 = year(PHRMCY_SYS_IVR_DTA_STRT_DT),",
-				"          PHRMCY_AGE1 = minus(currentDate(),toDate(PHRMCY_SYS_IVR_DTA_STRT_DT))) ~> SRCPHRMCYDerivedColumn"
+				"          PHRMCY_AGE1 = minus(currentDate(),toDate(PHRMCY_SYS_IVR_DTA_STRT_DT))) ~> SRCPHRMCYDerivedColumn",
+				"SRCPHRMCYDerivedColumn select(mapColumn(",
+				"          LANG_CD,",
+				"          DEAL_ID,",
+				"          PTNT_ID1,",
+				"          PTNT_CD1,",
+				"          PHRMCY_NCPDP_NBR1,",
+				"          PHRMCY_NAT_PROV_ID_NBR1,",
+				"          PSCB_FIRST_NM1,",
+				"          PSCB_LAST_NM1,",
+				"          PHRMCY_NM1,",
+				"          PHRMCY_ADDR_CITY_NM1,",
+				"          PHRMCY_ADDR_ST_NM1,",
+				"          PHRMCY_ADDR_ZNE_NM1,",
+				"          PHRMCY_ADDR_ZIP_CD1,",
+				"          PSCB_EMAIL_ID1,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_DT1,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_QTR1,",
+				"          PHRMCY_SYS_IVR_DTA_STRT_YR1,",
+				"          PHRMCY_AGE1",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> SelectSRCPHRMCY",
+				"SelectSRCPHRMCY, SourceSTATUS join(ERROR_FUNCTION('') == SourceSTATUS@deal_id,",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> PhrmcyStatusJoin",
+				"PhrmcyStatusJoin derive(DEAL_ID1 = iif(isNull(deal_nbr) || isNull(DEAL_ID1), 'Exists', 'Not Exists'),",
+				"          DEAL_TYPE_CD1 = left(deal_nbr, 2),",
+				"          DEAL_NUMBER1 = substring(deal_nbr, 3, length(deal_nbr))) ~> FirstJoinDC",
+				"FirstJoinDC join(ERROR_FUNCTION('') == ERROR_FUNCTION(''),",
+				"     joinType:'left',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> ThirdJoin"
 			]
 		}
 	}
