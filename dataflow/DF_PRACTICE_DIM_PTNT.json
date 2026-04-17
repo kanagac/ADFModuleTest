@@ -27,7 +27,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "DS_SQL_SERVER_SRC",
+						"referenceName": "DS_SQL_SERVER_TGT",
 						"type": "DatasetReference"
 					},
 					"name": "DimPtnt"
