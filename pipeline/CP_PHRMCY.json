@@ -47,7 +47,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DS_SRC_PTNT",
+						"referenceName": "DS_TGT_DIM_PTNT",
 						"type": "DatasetReference",
 						"parameters": {
 							"table_name": "DIM_PTNT"

@@ -5,12 +5,20 @@
 			"referenceName": "LS_TGT_DIM_PTNT",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"table_name": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "SqlServerTable",
 		"schema": [],
 		"typeProperties": {
 			"schema": "Mod_User8",
-			"table": "DIM_PTNT_mod_user8"
+			"table": {
+				"value": "@dataset().table_name",
+				"type": "Expression"
+			}
 		}
 	}
 }
