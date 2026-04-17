@@ -1,0 +1,17 @@
+{
+	"name": "DS_Target_SQl",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQL_Target",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"TableName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	}
+}

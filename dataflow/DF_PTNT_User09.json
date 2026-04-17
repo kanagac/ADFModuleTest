@@ -27,7 +27,7 @@
 				},
 				{
 					"dataset": {
-						"referenceName": "DS_SQL_Source_Table",
+						"referenceName": "DS_Target_SQl",
 						"type": "DatasetReference"
 					},
 					"name": "Target"
