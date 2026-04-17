@@ -42,6 +42,10 @@
 					"name": "DIMPTNT"
 				},
 				{
+					"dataset": {
+						"referenceName": "DS_Target_SQl",
+						"type": "DatasetReference"
+					},
 					"name": "Dpint"
 				},
 				{
@@ -239,8 +243,7 @@
 				"          PSCB_FIRST_NM = PSCB_FIRST_NM,",
 				"          PSCB_LAST_NM = PSCB_LAST_NM,",
 				"          LANG_CD = LANG_CD,",
-				"          LANG_DESC = LANG_DESC,",
-				"          RCD_MOD_TMS = ERROR_FUNCTION('')) ~> derivedColumn1",
+				"          LANG_DESC = LANG_DESC) ~> derivedColumn1",
 				"derivedColumn1 select(mapColumn(",
 				"          PHRMCY_NAT_PROV_ID_NBR,",
 				"          PHRMCY_NCPDP_NBR,",
@@ -269,8 +272,7 @@
 				"          DEAL_ID = derivedColumn1@DEAL_ID,",
 				"          DEAL_TYPE_CD,",
 				"          DEAL_NUMBER,",
-				"          RCD_CRT_TMS,",
-				"          RCD_MOD_TMS",
+				"          RCD_CRT_TMS",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> select2",
@@ -344,7 +346,6 @@
 				"          DEAL_TYPE_CD,",
 				"          DEAL_NUMBER,",
 				"          RCD_CRT_TMS,",
-				"          RCD_MOD_TMS,",
 				"          SourceHash",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
@@ -366,6 +367,11 @@
 				"     saveOrder: 2) ~> DIMPTNT",
 				"alterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     saveOrder: 1) ~> Dpint",
