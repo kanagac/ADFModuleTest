@@ -26,13 +26,6 @@
 							"SRC2STATUS": {
 								"table_name": "STATUS"
 							}
-						},
-						"linkedServiceParameters": {
-							"SRC2STATUS": {
-								"schemaLinkedService": {
-									"table_name": "LU_LANGUAGE"
-								}
-							}
 						}
 					},
 					"compute": {
