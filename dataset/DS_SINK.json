@@ -1,0 +1,16 @@
+{
+	"name": "DS_SINK",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_SQLSERVER",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DIM_PTNT"
+		}
+	}
+}
