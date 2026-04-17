@@ -17,7 +17,21 @@
 				"typeProperties": {
 					"dataflow": {
 						"referenceName": "df_dim_IN1717",
-						"type": "DataFlowReference"
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"STATUS": {
+								"tablename": "status"
+							},
+							"srcphrmcy": {
+								"tablename": "src_phrmcy"
+							},
+							"srclanguage": {
+								"tablename": "lu_language"
+							},
+							"sink1": {
+								"tablename": "DIM_PTNT"
+							}
+						}
 					},
 					"integrationRuntime": {
 						"referenceName": "BootcampModuleTest",
