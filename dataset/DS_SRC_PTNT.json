@@ -1,5 +1,5 @@
 {
-	"name": "DS_PTNT",
+	"name": "DS_SRC_PTNT",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_SRC_PTNT",
