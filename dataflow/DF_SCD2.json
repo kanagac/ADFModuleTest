@@ -33,7 +33,15 @@
 					"name": "SrcLanguage"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_SQL_TGT",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
 			"transformations": [
 				{
 					"name": "LeftJoinStatus"
@@ -151,7 +159,16 @@
 				"          PHRMCY_SYS_IVR_DTA_STRT_YR = ERROR_FUNCTION(''),",
 				"          DEAL_TYPE_CD = left(DEAL_NUMBER, 2),",
 				"          column6 = ERROR_FUNCTION(''),",
-				"          column7 = ERROR_FUNCTION('')) ~> derivedColumn1"
+				"          column7 = ERROR_FUNCTION('')) ~> derivedColumn1",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
 			]
 		}
 	}
